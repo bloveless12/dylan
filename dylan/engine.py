@@ -104,7 +104,7 @@ def AmericanPricer(pricingengine, option, data):
     
     for i in range(nodes):
         St[i] = spot * (u ** (steps - i)) * (d ** i)
-        Ct[i] = option,payoff(St[i])
+        Ct[i] = option.payoff(St[i])
         
     for i in range((steps - 1), -1, -1):
         for j in range(i+1):
@@ -112,5 +112,5 @@ def AmericanPricer(pricingengine, option, data):
             St[j] = St[j] / u
             Ct[j] = np.maximum(Ct[j], option.payoff(St[j]))
      
-    return ct[0]
+    return Ct[0]
 
