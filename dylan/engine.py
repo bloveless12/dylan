@@ -1,4 +1,4 @@
-import abc
+mport abc
 import numpy as np
 from scipy.stats import binom
 
@@ -81,3 +81,36 @@ def EuropeanBinomialPricer(pricing_engine, option, data):
     price = disc * payoffT 
      
     return price 
+
+def AmericanPricer(pricingengine, option, data):
+    #call variables
+    strike = option.strike
+    expiry = option.expiry
+    (spot, rate, volatility, dividend) = data.get_data()
+    steps = pricingengine.steps
+    nodes = steps + 1
+    dt = expiry / steps
+    d = np.exp((rate*dt) - volatility * np.sqrt(dt))
+    u = np.exp((rate*dt) + volatility * np.sqrt(dt))
+    pu = (np.exp(rate*dt) - d) / (u-d)
+    pd = 1 - pu
+    disc = np.exp(-rate * dt)
+    dpu = disc * pu
+    dpd = disc * pd
+    
+    #create place to store results of loops
+    Ct = np.zeros(nodes)
+    St = np.zeros(nodes)
+    
+    for i in range(nodes):
+        St[i] = spot * (u ** (steps - i)) * (d ** i)
+        Ct[i] = option,payoff(St[i])
+        
+    for i in range((steps - 1), -1, -1):
+        for j in range(i+1):
+            Ct[j] = dpu * Ct[j] + dpd * Ct[j + 1]
+            St[j] = St[j] / u
+            Ct[j] = np.maximum(Ct[j], option.payoff(St[j]))
+     
+    return ct[0]
+
