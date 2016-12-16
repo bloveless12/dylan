@@ -1,4 +1,4 @@
-mport abc
+import abc
 import numpy as np
 from scipy.stats import binom
 
